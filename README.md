@@ -6,10 +6,10 @@ card. It uses the Idemix library together with SCUBA and different libraries
 from https://github.com/credentials/.
 
 ## Installation
-
+```
 git submodule init
 git submodule update
-
+```
 Generate the following jars: credentials_api.dev.jar, credentials_idemix.dev.jar,  
 idemix_library.dev.jar, idemix_terminal.dev.jar and scuba.dev.jar
 via the instructions available at http://credentials.github.io/
