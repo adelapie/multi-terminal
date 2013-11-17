@@ -22,7 +22,7 @@ mvn install:install-file -Dfile=idemix_library.dev.jar -DgroupId=com.ibm.zurich 
 mvn install:install-file -Dfile=idemix_terminal.dev.jar -DgroupId=org.irmacard.idemix -DartifactId=idemix-terminal -Dversion=1.0 -Dpackaging=org.irmacard.idemix
 mvn install:install-file -Dfile=scuba.dev.jar -DgroupId=net.sourceforge.scuba -DartifactId=scuba -Dversion=1.0 -Dpackaging=net.sourceforge.scuba
 ```
-Finally, compile and generate a jar file.
+Finally, compile and generate a jar file:
 ```
 mvn clean install
 ```
