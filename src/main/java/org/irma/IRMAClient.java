@@ -54,10 +54,10 @@ public class IRMAClient
    private static Options createOptions() {
     Options options = new Options();
     options.addOption("h", "help", false, "print this message and exit");
-    options.addOption("i", "card-pin-status", false, "get information about IRMA card");
+    options.addOption("i", "info-card", false, "get information about IRMA card");
     options.addOption("vcp", "verify-cred-pin", true, "verify credential pin status (4-digit)");
     options.addOption("vap", "verify-card-pin", true, "verify admin pin status (6-digit)");
-    options.addOption("l", "log", true, "get log entries (requires admin pin (6-digit)");
+    options.addOption("l", "log", true, "get log entries - it requires an admin pin (6-digit)");
 
     
     OptionBuilder.withArgName("old-pin new-pin");
