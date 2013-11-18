@@ -31,13 +31,23 @@ mvn clean install
 ```
 ## Use
 ```
-test@ss:~$ java -jar target/multi_terminal-1.0-SNAPSHOT-jar-with-dependencies.jar -h
+test@test1:~$ java -jar target/multi_terminal-1.0-SNAPSHOT-jar-with-dependencies.jar -h
 usage: IRMA Terminal
- -h,--help                      print this message and exit
- -i,--info-card                 get information about IRMA card
- -l,--log <arg>                 get log entries (requires admin pin
-                                (6-digit))
- -uap <old-pin new-pin>         update admin pin (6-digit)
- -vap,--verify-card-pin <arg>   verify admin pin status (6-digit)
- -vcp,--verify-cred-pin <arg>   verify credential pin status (4-digit)
+ -h,--help                         print this message and exit
+ -i,--info-card                    get information about IRMA card
+ -ir,--issue-root-cred <arg>       issue root cred - requires cred pin
+ -is,--issue-student-cred <arg>    issue student cred - requires cred pin
+ -l,--log <arg>                    get log entries - requires admin pin
+ -rr,--remove-root-cred <arg>      remove root cred - requires admin pin
+ -rs,--remove-student-cred <arg>   remove student cred - requires admin
+                                   pin
+ -uap <old-pin new-pin>            update admin pin (6-digit)
+ -ucp <admin-pin new-cred-pin>     update cred pin (4-digit)
+ -vap,--verify-card-pin <arg>      verify admin pin status (6-digit)
+ -vcp,--verify-cred-pin <arg>      verify cred pin status (4-digit)
+ -vr,--verify-root-cred            verify root cred - all
+ -vrds,--verify-root-cred-ds       verify root cred - all with DS
+ -vrn,--verity-root-cred-none      verify root cred - none
+ -vs,--verify-student-cred         verify student credential - all
+ -vsn,--verity-student-cred-none   verify student cred - none
 ```

@@ -150,9 +150,13 @@ public class Setup
         ic.issue(spec, isk, attributes, null);
     }
 
-    public void verifyRootCredentialAll() throws CardException, CredentialsException {
+    public static void verifyRootCredentialAll() throws CardException, CredentialsException, InfoException {
+
+        initializeInformation();        
+        
         VerifyCredentialInformation vci = new VerifyCredentialInformation(
 				"Surfnet", "root", "Surfnet", "rootAll");
+        
         IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
 
         CardService cs = getCardService();
@@ -169,7 +173,9 @@ public class Setup
         attr.print();
     }
 
-    public void verifyRootCredentialAll_withDS() throws CardException, CredentialsException, InfoException {
+    public static void verifyRootCredentialAll_withDS() throws CardException, CredentialsException, InfoException {
+
+        initializeInformation();        
 
         VerifyCredentialInformation vci = new VerifyCredentialInformation("Surfnet", "rootAll");
         IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
@@ -188,7 +194,9 @@ public class Setup
         attr.print();
     }
 
-    public void verifyRootCredentialNone() throws CardException, CredentialsException {
+    public static void verifyRootCredentialNone() throws CardException, CredentialsException, InfoException {
+        initializeInformation();        
+
         VerifyCredentialInformation vci = new VerifyCredentialInformation(
             "Surfnet", "root", "Surfnet", "rootNone");
         
@@ -208,14 +216,16 @@ public class Setup
         attr.print();
     }
 
-    public void removeRootCredential() throws CardException, CredentialsException, CardServiceException, InfoException {
+    public static void removeRootCredential(byte[] pin) throws CardException, CredentialsException, CardServiceException, InfoException {
+        initializeInformation();
+
         CredentialDescription cd = DescriptionStore.getInstance().getCredentialDescriptionByName("Surfnet", "root");
 
         IdemixService is = getIdemixService();
         IdemixCredentials ic = new IdemixCredentials(is);
 
         ic.connect();
-        is.sendCardPin(DEFAULT_CARD_PIN);
+        is.sendCardPin(pin);
         
         try {
             ic.removeCredential(cd);
@@ -226,7 +236,9 @@ public class Setup
         }
     }
 
-    public void issueStudentCredential() throws CardException, CredentialsException, CardServiceException {
+    public static void issueStudentCredential(byte[] pin) throws CardException, CredentialsException, CardServiceException, InfoException {
+        initializeInformation();
+
         IssueCredentialInformation ici = new IssueCredentialInformation("RU", "studentCard");
         IdemixIssueSpecification spec = ici.getIdemixIssueSpecification();
         IdemixPrivateKey isk = ici.getIdemixPrivateKey();
@@ -235,13 +247,14 @@ public class Setup
         IdemixCredentials ic = new IdemixCredentials(is);
         ic.connect();
         
-        is.sendPin(DEFAULT_CRED_PIN);
+        is.sendPin(pin);
         Attributes attributes = getStudentCardAttributes();
 
         ic.issue(spec, isk, attributes, null);
     }
 
-    public void verifyStudentCredentialAll() throws CardException, CredentialsException {
+    public static void verifyStudentCredentialAll() throws CardException, CredentialsException, InfoException {
+        initializeInformation();
         VerifyCredentialInformation vci = new VerifyCredentialInformation("RU", "studentCard", "RU", "studentCardAll");
         
         IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
@@ -294,7 +307,7 @@ public class Setup
             return new IdemixService(getCardService());
     }
 
-    private Attributes getStudentCardAttributes() {
+    private static Attributes getStudentCardAttributes() {
         // Return the attributes that have been revealed during the proof
         Attributes attributes = new Attributes();
         
@@ -307,521 +320,43 @@ public class Setup
 		
         return attributes;
     }
+    
+    public static void removeStudentCredential(byte[] pin) throws CardException, CredentialsException, CardServiceException, InfoException {
+                initializeInformation();
+		CredentialDescription cd = DescriptionStore.getInstance().getCredentialDescriptionByName("RU", "studentCard");
 
-}
+		IdemixService is = getIdemixService();
+		IdemixCredentials ic = new IdemixCredentials(is);
 
-/*
+		ic.connect();
+		is.sendCardPin(pin);
+		try {
+			ic.removeCredential(cd);
+		} catch (CardServiceException e) {
+			if (!e.getMessage().toUpperCase().contains("6A88")) {
+				throw e;
+			}
+		}
+	}
 
-	@Test
-
-	@Test
-	public void verifyStudentCredentialNone() throws CardException, CredentialsException {
+	public static void verifyStudentCredentialNone() throws CardException, CredentialsException, InfoException {
+		initializeInformation();
 		VerifyCredentialInformation vci = new VerifyCredentialInformation("RU",
 				"studentCard", "RU", "studentCardNone");
 		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
 
-		CardService cs = TestSetup.getCardService();
+		CardService cs = getCardService();
 		IdemixCredentials ic = new IdemixCredentials(cs);
 
 		Attributes attr = ic.verify(vspec);
 		
 		if (attr == null) {
-			fail("The proof does not verify");
+			System.out.println("The proof does not verify");
 		} else {
 			System.out.println("Proof verified");
 		}
 		
 		attr.print();
 	}
-	@Test
-	public void removeStudentCredential() throws CardException, CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance().getCredentialDescriptionByName("RU", "studentCard");
-
-		IdemixService is = TestSetup.getIdemixService();
-		IdemixCredentials ic = new IdemixCredentials(is);
-
-		ic.connect();
-		is.sendCardPin(TestSetup.DEFAULT_CARD_PIN);
-		try {
-			ic.removeCredential(cd);
-		} catch (CardServiceException e) {
-			if (!e.getMessage().toUpperCase().contains("6A88")) {
-				throw e;
-			}
-		}
-	}
-
-	@Test
-	public void issueAgeCredential() throws CardException, CredentialsException, CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation("MijnOverheid", "ageLower");
-		IdemixIssueSpecification spec = ici.getIdemixIssueSpecification();
-		IdemixPrivateKey isk = ici.getIdemixPrivateKey();
-		
-		IdemixService is = new IdemixService(TestSetup.getCardService());
-		IdemixCredentials ic = new IdemixCredentials(is);
-		ic.connect();
-		is.sendPin(TestSetup.DEFAULT_CRED_PIN);
-		Attributes attributes = getAgeAttributes();
-		ic.issue(spec, isk, attributes, null);
-	}
-
-
-	@Test
-	public void verifyAgeCredentialAll() throws CardException, CredentialsException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation("MijnOverheid",
-				"ageLower", "MijnOverheid", "ageLowerAll");
-		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
-
-		CardService cs = TestSetup.getCardService();
-		IdemixCredentials ic = new IdemixCredentials(cs);
-
-		Attributes attr = ic.verify(vspec);
-		
-		if (attr == null) {
-			fail("The proof does not verify");
-		} else {
-			System.out.println("Proof verified");
-		}
-		
-		attr.print();
-	}
-
-	@Test
-	public void verifyAgeCredentialNone() throws CardException, CredentialsException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation("MijnOverheid",
-				"ageLower", "MijnOverheid", "ageLowerNone");
-		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
-
-		CardService cs = TestSetup.getCardService();
-		IdemixCredentials ic = new IdemixCredentials(cs);
-
-		Attributes attr = ic.verify(vspec);
-		
-		if (attr == null) {
-			fail("The proof does not verify");
-		} else {
-			System.out.println("Proof verified");
-		}
-		
-		attr.print();
-	}
-	
-	@Test
-	public void verifyAgeCredentialOver16() throws CardException, CredentialsException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation("MijnOverheid",
-				"ageLower", "UitzendingGemist", "ageLowerOver16");
-		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
-
-		CardService cs = TestSetup.getCardService();
-		IdemixCredentials ic = new IdemixCredentials(cs);
-
-		Attributes attr = ic.verify(vspec);
-
-		if (attr == null) {
-			fail("The proof does not verify");
-		} else {
-			System.out.println("Proof verified");
-		}
-
-		attr.print();
-	}
-
-	@Test
-	public void removeAgeCredential() throws CardException, CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance().getCredentialDescriptionByName("MijnOverheid", "ageLower");
-
-		IdemixService is = TestSetup.getIdemixService();
-		IdemixCredentials ic = new IdemixCredentials(is);
-
-		ic.connect();
-		is.sendCardPin(TestSetup.DEFAULT_CARD_PIN);
-		try {
-			ic.removeCredential(cd);
-		} catch (CardServiceException e) {
-			if (!e.getMessage().toUpperCase().contains("6A88")) {
-				throw e;
-			}
-		}
-	}
-
-	@Test
-	public void issueAddressNijmegenCredential() throws CardException, CredentialsException, CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation("MijnOverheid", "address");
-		IdemixIssueSpecification spec = ici.getIdemixIssueSpecification();
-		IdemixPrivateKey isk = ici.getIdemixPrivateKey();
-		
-		IdemixService is = new IdemixService(TestSetup.getCardService());
-		IdemixCredentials ic = new IdemixCredentials(is);
-		ic.connect();
-		is.sendPin(TestSetup.DEFAULT_CRED_PIN);
-		Attributes attributes = getAddressNijmegenAttributes();
-		ic.issue(spec, isk, attributes, null);
-	}
-	
-	@Test
-	public void removeAddressNijmegenCredential() throws CardException, CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance().getCredentialDescriptionByName("MijnOverheid", "address");
-
-		IdemixService is = TestSetup.getIdemixService();
-		IdemixCredentials ic = new IdemixCredentials(is);
-
-		ic.connect();
-		is.sendCardPin(TestSetup.DEFAULT_CARD_PIN);
-		try {
-			ic.removeCredential(cd);
-		} catch (CardServiceException e) {
-			if (!e.getMessage().toUpperCase().contains("6A88")) {
-				throw e;
-			}
-		}
-	}
-
-	@Test
-	public void issueAddressReuverCredential() throws CardException, CredentialsException, CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation("MijnOverheid", "address");
-		IdemixIssueSpecification spec = ici.getIdemixIssueSpecification();
-		IdemixPrivateKey isk = ici.getIdemixPrivateKey();
-		
-		IdemixService is = new IdemixService(TestSetup.getCardService());
-		IdemixCredentials ic = new IdemixCredentials(is);
-		ic.connect();
-		is.sendPin(TestSetup.DEFAULT_CRED_PIN);
-		Attributes attributes = getAddressReuverAttributes();
-		spec.setCardVersion(is.getCardVersion());
-		ic.issue(spec, isk, attributes, null);
-	}
-	
-	@Test
-	public void verifyAddressCredentialAll() throws CardException, CredentialsException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation("MijnOverheid",
-				"address", "MijnOverheid", "addressAll");
-		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
-
-		CardService cs = TestSetup.getCardService();
-		IdemixCredentials ic = new IdemixCredentials(cs);
-
-		Attributes attr = ic.verify(vspec);
-		
-		if (attr == null) {
-			fail("The proof does not verify");
-		} else {
-			System.out.println("Proof verified");
-		}
-		
-		attr.print();
-	}
-
-	@Test
-	public void verifyAddressCredentialNone() throws CardException, CredentialsException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation("MijnOverheid",
-				"address", "MijnOverheid", "addressNone");
-		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
-
-		CardService cs = TestSetup.getCardService();
-		IdemixCredentials ic = new IdemixCredentials(cs);
-
-		Attributes attr = ic.verify(vspec);
-		
-		if (attr == null) {
-			fail("The proof does not verify");
-		} else {
-			System.out.println("Proof verified");
-		}
-		
-		attr.print();
-	}
-	
-	@Test
-	public void removeAddressCredential() throws CardException, CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance().getCredentialDescriptionByName("MijnOverheid", "address");
-
-		IdemixService is = TestSetup.getIdemixService();
-		IdemixCredentials ic = new IdemixCredentials(is);
-
-		ic.connect();
-		is.sendCardPin(TestSetup.DEFAULT_CARD_PIN);
-		try {
-			ic.removeCredential(cd);
-		} catch (CardServiceException e) {
-			if (!e.getMessage().toUpperCase().contains("6A88")) {
-				throw e;
-			}
-		}
-	}
-
-	@Test
-	public void issueMijnOverheidRoot() throws CardException,
-			CredentialsException, CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation(
-				"MijnOverheid", "root");
-
-		Attributes attributes = new Attributes();
-		attributes.add("BSN", "123456789".getBytes());
-
-		issue(ici, attributes);
-	}
-
-	@Test
-	public void verifyMijnOverheidRoot() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"MijnOverheid", "rootAll");
-		verify(vci);
-	}
-
-	@Test
-	public void removeMijnOverheidRoot() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance()
-				.getCredentialDescriptionByName("MijnOverheid", "root");
-		remove(cd);
-	}
-
-	@Test
-	public void issueFullNameCredential() throws CardException, CredentialsException,
-			CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation(
-				"MijnOverheid", "fullName");
-
-		Attributes attributes = new Attributes();
-		attributes.add("firstnames", "Johan Pieter".getBytes());
-		attributes.add("firstname", "Johan".getBytes());
-		attributes.add("familyname", "Stuivezand".getBytes());
-		attributes.add("prefix", "van".getBytes());
-
-		issue(ici, attributes);
-	}
-
-	@Test
-	public void verifyFullNameCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"MijnOverheid", "fullNameAll");
-		verify(vci);
-	}
-
-	@Test
-	public void removeFullNameCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance()
-				.getCredentialDescriptionByName("MijnOverheid", "fullName");
-		remove(cd);
-	}
-
-	@Test
-	public void issueBirthCertificate() throws CardException, CredentialsException,
-			CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation(
-				"MijnOverheid", "birthCertificate");
-
-		Attributes attributes = new Attributes();
-		attributes.add("dateofbirth", "29-2-2004".getBytes());
-		attributes.add("placeofbirth", "Stuivezand".getBytes());
-		attributes.add("countryofbirth", "Nederland".getBytes());
-		attributes.add("gender", "male".getBytes());
-
-		issue(ici, attributes);
-	}
-
-	@Test
-	public void verifyBirthCertificate() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"MijnOverheid", "birthCertificateAll");
-		verify(vci);
-	}
-
-	@Test
-	public void removeBirthCertificate() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance()
-				.getCredentialDescriptionByName("MijnOverheid", "birthCertificate");
-		remove(cd);
-	}
-
-	@Test
-	public void issueSeniorAgeCredential() throws CardException, CredentialsException,
-			CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation(
-				"MijnOverheid", "ageHigher");
-
-		Attributes attributes = new Attributes();
-		attributes.add("over50", "yes".getBytes());
-		attributes.add("over60", "no".getBytes());
-		attributes.add("over65", "no".getBytes());
-		attributes.add("over75", "no".getBytes());
-
-		issue(ici, attributes);
-	}
-
-	@Test
-	public void verifySeniorAgeCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"MijnOverheid", "ageHigherAll");
-		verify(vci);
-	}
-
-	@Test
-	public void removeSeniorAgeCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance()
-				.getCredentialDescriptionByName("MijnOverheid", "ageHigher");
-		remove(cd);
-	}
-
-	@Test
-	public void issueIRMATubeMemberCredential() throws CardException, CredentialsException,
-			CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation(
-				"IRMATube", "member");
-
-		Attributes attributes = new Attributes();
-		attributes.add("name", "J.P. Stuivezand".getBytes());
-		attributes.add("type", "regular".getBytes());
-		attributes.add("id", "123456".getBytes());
-
-		issue(ici, attributes);
-	}
-
-	@Test
-	public void verifyIRMATubeMemberCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"IRMATube", "memberAll");
-		verify(vci);
-	}
-
-	@Test
-	public void verifyIRMATubeMemberTypeCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"IRMATube", "memberType");
-		verify(vci);
-	}
-
-	@Test
-	public void removeIRMATubeMemberCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance()
-				.getCredentialDescriptionByName("IRMATube", "member");
-		remove(cd);
-	}
-
-	@Test
-	public void issueIRMAWikiMemberCredential() throws CardException, CredentialsException,
-			CardServiceException {
-		IssueCredentialInformation ici = new IssueCredentialInformation(
-				"IRMAWiki", "member");
-
-		Attributes attributes = new Attributes();
-		attributes.add("nickname", "Stuifje".getBytes());
-		attributes.add("type", "regular".getBytes());
-
-		issue(ici, attributes);
-	}
-
-	@Test
-	public void verifyIRMAWikiMemberCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"IRMAWiki", "memberAll");
-		verify(vci);
-	}
-
-	@Test
-	public void removeIRMAWikiMemberCredential() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		CredentialDescription cd = DescriptionStore.getInstance()
-				.getCredentialDescriptionByName("IRMAWiki", "member");
-		remove(cd);
-	}
-
-	@Test
-	public void verifyIRMAWikiSurfnetRootNone() throws CardException,
-			CredentialsException, CardServiceException, InfoException {
-		VerifyCredentialInformation vci = new VerifyCredentialInformation(
-				"IRMAWiki", "surfnetRootNone");
-		verify(vci);
-	}
-
-	private void issue(IssueCredentialInformation ici, Attributes attributes)
-			throws CardException, CredentialsException, CardServiceException {
-		IdemixIssueSpecification spec = ici.getIdemixIssueSpecification();
-		IdemixPrivateKey isk = ici.getIdemixPrivateKey();
-
-		IdemixService is = new IdemixService(TestSetup.getCardService());
-		IdemixCredentials ic = new IdemixCredentials(is);
-		ic.connect();
-		is.sendPin(TestSetup.DEFAULT_CRED_PIN);
-		ic.issue(spec, isk, attributes, null);
-	}
-
-	private void verify(VerifyCredentialInformation vci) throws CardException, CredentialsException {
-		IdemixVerifySpecification vspec = vci.getIdemixVerifySpecification();
-
-		CardService cs = TestSetup.getCardService();
-		IdemixCredentials ic = new IdemixCredentials(cs);
-
-		Attributes attr = ic.verify(vspec);
-
-		if (attr == null) {
-			fail("The proof does not verify");
-		} else {
-			System.out.println("Proof verified");
-		}
-
-		attr.print();
-	}
-
-	private void remove(CredentialDescription cd) throws CardException, CredentialsException, CardServiceException, InfoException {
-		IdemixService is = TestSetup.getIdemixService();
-		IdemixCredentials ic = new IdemixCredentials(is);
-
-		ic.connect();
-		is.sendCardPin(TestSetup.DEFAULT_CARD_PIN);
-		try {
-			ic.removeCredential(cd);
-		} catch (CardServiceException e) {
-			if (!e.getMessage().toUpperCase().contains("6A88")) {
-				throw e;
-			}
-		}
-	}
-
-
-    
-    private Attributes getAgeAttributes () {
-        Attributes attributes = new Attributes();
-
-		attributes.add("over12", "yes".getBytes());
-		attributes.add("over16", "yes".getBytes());
-		attributes.add("over18", "yes".getBytes());
-		attributes.add("over21", "yes".getBytes());
-		
-		return attributes;
-    }
-    
-    private Attributes getAddressNijmegenAttributes () {
-        Attributes attributes = new Attributes();
-
-		attributes.add("country", "Nederland".getBytes());
-		attributes.add("city", "Nijmegen".getBytes());
-		attributes.add("street", "Heyendaalseweg 135".getBytes());
-		attributes.add("zipcode", "6525 AJ".getBytes());
-		
-		return attributes;
-    }
-
-    private Attributes getAddressReuverAttributes () {
-        Attributes attributes = new Attributes();
-
-		attributes.add("country", "Nederland".getBytes());
-		attributes.add("city", "Reuver".getBytes());
-		attributes.add("street", "Snavelbies 19".getBytes());
-		attributes.add("zipcode", "5953 MR".getBytes());
-		
-		return attributes;
-    }
 }
-*/
+

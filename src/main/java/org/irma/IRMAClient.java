@@ -55,10 +55,18 @@ public class IRMAClient
     Options options = new Options();
     options.addOption("h", "help", false, "print this message and exit");
     options.addOption("i", "info-card", false, "get information about IRMA card");
-    options.addOption("vcp", "verify-cred-pin", true, "verify credential pin status (4-digit)");
+    options.addOption("vcp", "verify-cred-pin", true, "verify cred pin status (4-digit)");
     options.addOption("vap", "verify-card-pin", true, "verify admin pin status (6-digit)");
     options.addOption("l", "log", true, "get log entries - requires admin pin");
-    options.addOption("ir", "issue-root-cred", true, "issue root credential - requires admin pin");
+    options.addOption("ir", "issue-root-cred", true, "issue root cred - requires cred pin");
+    options.addOption("vr", "verify-root-cred", false, "verify root cred - all");
+    options.addOption("vrds", "verify-root-cred-ds", false, "verify root cred - all with DS");
+    options.addOption("vrn", "verity-root-cred-none", false, "verify root cred - none");
+    options.addOption("vsn", "verity-student-cred-none", false, "verify student cred - none");
+    options.addOption("rr", "remove-root-cred", true, "remove root cred - requires admin pin");
+    options.addOption("is", "issue-student-cred", true, "issue student cred - requires cred pin");
+    options.addOption("vs", "verify-student-cred", false, "verify student credential - all");
+    options.addOption("rs", "remove-student-cred", true, "remove student cred - requires admin pin");
 
     OptionBuilder.withArgName("old-pin new-pin");
     OptionBuilder.hasArgs(2);
@@ -176,8 +184,75 @@ public class IRMAClient
           System.out.println(e);
         
         }
+       } else if (cmd.hasOption("vr")) {
+        try {
+          Setup.verifyRootCredentialAll();
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("vrds")) {
+        try {
+          Setup.verifyRootCredentialAll_withDS();
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("vrn")) {
+        try {
+          Setup.verifyRootCredentialNone();
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("rr")) {
+        try {
+          String pin = cmd.getOptionValue("rr");
+          byte[] hexPin = pin.getBytes("UTF-8");
+ 
+          Setup.removeRootCredential(hexPin);
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("is")) {
+        try {
+          String pin = cmd.getOptionValue("is");
+          byte[] hexPin = pin.getBytes("UTF-8");
+ 
+          Setup.issueStudentCredential(hexPin);
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("vs")) {
+        try {
+          Setup.verifyStudentCredentialAll();
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("vsn")) {
+        try {
+          Setup.verifyStudentCredentialNone();
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("rs")) {
+        try {
+          String pin = cmd.getOptionValue("rs");
+          byte[] hexPin = pin.getBytes("UTF-8");
+ 
+          Setup.removeStudentCredential(hexPin);
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+
       } else if (cmd.hasOption("i")) {
         Setup.readInfo();
+
       } else {
         showHelp(options);
       }
