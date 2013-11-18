@@ -57,15 +57,22 @@ public class IRMAClient
     options.addOption("i", "info-card", false, "get information about IRMA card");
     options.addOption("vcp", "verify-cred-pin", true, "verify credential pin status (4-digit)");
     options.addOption("vap", "verify-card-pin", true, "verify admin pin status (6-digit)");
-    options.addOption("l", "log", true, "get log entries - it requires an admin pin (6-digit)");
+    options.addOption("l", "log", true, "get log entries - requires admin pin");
+    options.addOption("ir", "issue-root-cred", true, "issue root credential - requires admin pin");
 
-    
     OptionBuilder.withArgName("old-pin new-pin");
     OptionBuilder.hasArgs(2);
     OptionBuilder.withDescription("update admin pin (6-digit)");
 
     Option updateCardPin = OptionBuilder.create("uap");
     options.addOption(updateCardPin);
+
+    OptionBuilder.withArgName("admin-pin new-cred-pin");
+    OptionBuilder.hasArgs(2);
+    OptionBuilder.withDescription("update cred pin (4-digit)");
+
+    Option updateCredentialPin = OptionBuilder.create("ucp");
+    options.addOption(updateCredentialPin);
 
     return options;
   }
@@ -136,6 +143,35 @@ public class IRMAClient
             is.open();
             is.updateCardPin(hexOldPin, hexNewPin);
           }
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+      } else if (cmd.hasOption("ucp")) {
+        try {
+          String[] searchArgs = cmd.getOptionValues("ucp");
+          if (searchArgs.length == 2) {
+            byte[] hexAdminPin = searchArgs[0].getBytes("UTF-8");
+            byte[] hexNewCredentialPin = searchArgs[1].getBytes("UTF-8");
+          
+            CardTerminal terminal = TerminalFactory.getDefault().terminals().list().get(0);            
+            IdemixService is = new IdemixService(new TerminalCardService(terminal));
+          
+            is.open();
+
+            is.sendCardPin(hexAdminPin);
+            is.updateCredentialPin(hexNewCredentialPin);
+          }
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }
+       } else if (cmd.hasOption("ir")) {
+        try {
+          String pin = cmd.getOptionValue("ir");
+          byte[] hexPin = pin.getBytes("UTF-8");
+                    
+          Setup.issueRootCredential(hexPin);
         } catch (Exception e) {
           System.out.println(e);
         

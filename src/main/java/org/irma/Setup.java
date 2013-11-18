@@ -132,7 +132,10 @@ public class Setup
 
     }
 
-    public void issueRootCredential() throws CardException, CredentialsException, CardServiceException {
+    public static void issueRootCredential(byte[] pin) throws CardException, CredentialsException, CardServiceException, InfoException {
+        
+        initializeInformation();
+
         IssueCredentialInformation ici = new IssueCredentialInformation("Surfnet", "root");
         IdemixIssueSpecification spec = ici.getIdemixIssueSpecification();
         IdemixPrivateKey isk = ici.getIdemixPrivateKey();
@@ -141,7 +144,7 @@ public class Setup
         IdemixCredentials ic = new IdemixCredentials(is);
         ic.connect();
         
-        is.sendPin(DEFAULT_CRED_PIN);
+        is.sendPin(pin);
         Attributes attributes = getSurfnetAttributes();
 
         ic.issue(spec, isk, attributes, null);
@@ -277,7 +280,7 @@ public class Setup
     	return new TerminalCardService(terminal);
     }
 
-    private Attributes getSurfnetAttributes() {
+    private static Attributes getSurfnetAttributes() {
         // Return the attributes that have been revealed during the proof
         Attributes attributes = new Attributes();
 

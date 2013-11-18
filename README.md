@@ -9,6 +9,9 @@ from https://github.com/credentials/.
 ```
 git submodule init
 git submodule update
+cd irma_configuration
+git checkout demo
+cd ..
 ```
 Generate the following jars: credentials_api.dev.jar, credentials_idemix.dev.jar,  
 idemix_library.dev.jar, idemix_terminal.dev.jar and scuba.dev.jar
