@@ -1,5 +1,5 @@
 multi-terminal
-==============
+==============+
 
 multi-terminal is a command-line tool for managing the IRMA 
 card. It uses the Idemix library together with SCUBA and different libraries
