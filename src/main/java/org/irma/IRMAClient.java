@@ -49,6 +49,8 @@ import org.apache.commons.codec.binary.Hex;
 import java.util.Date;
 import java.util.List;
 
+import org.irmacard.idemix.util.CardVersion;
+
 public class IRMAClient 
 {
    private static Options createOptions() {
@@ -67,6 +69,8 @@ public class IRMAClient
     options.addOption("is", "issue-student-cred", true, "issue student cred - requires cred pin");
     options.addOption("vs", "verify-student-cred", false, "verify student credential - all");
     options.addOption("rs", "remove-student-cred", true, "remove student cred - requires admin pin");
+    options.addOption("qc", "query-cred-pin", false, "query credential pin");
+    options.addOption("qa", "query-admin-pin", false, "query admin pin");
 
     OptionBuilder.withArgName("old-pin new-pin");
     OptionBuilder.hasArgs(2);
@@ -239,7 +243,27 @@ public class IRMAClient
           System.out.println(e);
         
         }
-       } else if (cmd.hasOption("rs")) {
+      } else if (cmd.hasOption("qc")) {
+        try {
+            CardTerminal terminal = TerminalFactory.getDefault().terminals().list().get(0);            
+            IdemixService is = new IdemixService(new TerminalCardService(terminal));
+          
+            is.open();
+            System.out.println(is.queryCredentialPin());
+        } catch (Exception e) { 
+          System.out.println(e);
+        }
+      } else if (cmd.hasOption("qa")) {
+        try {
+            CardTerminal terminal = TerminalFactory.getDefault().terminals().list().get(0);            
+            IdemixService is = new IdemixService(new TerminalCardService(terminal));
+          
+            is.open();
+            System.out.println(is.queryCardPin());
+        } catch (Exception e) { 
+          System.out.println(e);
+        }
+      } else if (cmd.hasOption("rs")) {
         try {
           String pin = cmd.getOptionValue("rs");
           byte[] hexPin = pin.getBytes("UTF-8");
@@ -251,7 +275,17 @@ public class IRMAClient
         }
 
       } else if (cmd.hasOption("i")) {
-        Setup.readInfo();
+        CardTerminal terminal = TerminalFactory.getDefault().terminals().list().get(0);            
+        IdemixService is = new IdemixService(new TerminalCardService(terminal));
+        is.open();
+        CardVersion cv = is.getCardVersion();
+        
+        System.out.println("major: " + cv.getMajor() + " " + "minor: " + cv.getMinor());
+        System.out.println("maint " + cv.getMaintenance());
+        System.out.println("build " + cv.getBuild());
+        System.out.println("count " + cv.getCounter());
+        System.out.println("extra " + cv.getExtra());
+        
 
       } else {
         showHelp(options);

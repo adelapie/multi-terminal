@@ -38,6 +38,8 @@ usage: IRMA Terminal
  -ir,--issue-root-cred <arg>       issue root cred - requires cred pin
  -is,--issue-student-cred <arg>    issue student cred - requires cred pin
  -l,--log <arg>                    get log entries - requires admin pin
+ -qa,--query-admin-pin             query admin pin
+ -qc,--query-cred-pin              query credential pin
  -rr,--remove-root-cred <arg>      remove root cred - requires admin pin
  -rs,--remove-student-cred <arg>   remove student cred - requires admin
                                    pin
