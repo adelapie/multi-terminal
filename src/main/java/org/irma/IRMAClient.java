@@ -48,6 +48,7 @@ import org.apache.commons.codec.binary.Hex;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import org.irmacard.idemix.util.CardVersion;
 
@@ -71,6 +72,7 @@ public class IRMAClient
     options.addOption("rs", "remove-student-cred", true, "remove student cred - requires admin pin");
     options.addOption("qc", "query-cred-pin", false, "query credential pin");
     options.addOption("qa", "query-admin-pin", false, "query admin pin");
+    options.addOption("lc", "list-credentials", true, "list credentials - requires admin pin");
 
     OptionBuilder.withArgName("old-pin new-pin");
     OptionBuilder.hasArgs(2);
@@ -202,6 +204,30 @@ public class IRMAClient
           System.out.println(e);
         
         }
+       } else if (cmd.hasOption("lc")) {
+         try {
+          String pin = cmd.getOptionValue("lc");
+          byte[] hexPin = pin.getBytes("UTF-8");
+          
+          CardTerminal terminal = TerminalFactory.getDefault().terminals().list().get(0);            
+          IdemixService is = new IdemixService(new TerminalCardService(terminal));
+          
+          Vector<Integer> list = new Vector<Integer>();
+          
+          is.open();
+          is.sendCardPin(hexPin);
+          list = is.getCredentials();        
+          
+          System.out.println("\nList of credentials");
+          
+          for (Integer i : list) {
+            System.out.println("Cred: " + i);
+          }
+          
+        } catch (Exception e) {
+          System.out.println(e);
+        
+        }       
        } else if (cmd.hasOption("vrn")) {
         try {
           Setup.verifyRootCredentialNone();
