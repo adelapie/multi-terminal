@@ -19,11 +19,11 @@ via the instructions available at http://credentials.github.io/
 
 Create the lib directory (mkdir lib) and move the jars to ./lib. Then, install them using maven:
 ```
-mvn install:install-file -Dfile=credentials_api.dev.jar -DgroupId=org.irmacard.credentials -DartifactId=credentials -Dversion=1.0 -Dpackaging=org.irmacard.credentials
-mvn install:install-file -Dfile=credentials_idemix.dev.jar -DgroupId=org.irmacard.credentials.idemix -DartifactId=credentials-idemix -Dversion=1.0 -Dpackaging=org.irmacard.credentials.idemix
-mvn install:install-file -Dfile=idemix_library.dev.jar -DgroupId=com.ibm.zurich -DartifactId=ibm-idemix -Dversion=1.0 -Dpackaging=com.ibm.zurich
-mvn install:install-file -Dfile=idemix_terminal.dev.jar -DgroupId=org.irmacard.idemix -DartifactId=idemix-terminal -Dversion=1.0 -Dpackaging=org.irmacard.idemix
-mvn install:install-file -Dfile=scuba.dev.jar -DgroupId=net.sourceforge.scuba -DartifactId=scuba -Dversion=1.0 -Dpackaging=net.sourceforge.scuba
+mvn install:install-file -Dfile=lib/credentials_api.dev.jar -DgroupId=org.irmacard.credentials -DartifactId=credentials -Dversion=1.0 -Dpackaging=org.irmacard.credentials
+mvn install:install-file -Dfile=lib/credentials_idemix.dev.jar -DgroupId=org.irmacard.credentials.idemix -DartifactId=credentials-idemix -Dversion=1.0 -Dpackaging=org.irmacard.credentials.idemix
+mvn install:install-file -Dfile=lib/idemix_library.dev.jar -DgroupId=com.ibm.zurich -DartifactId=ibm-idemix -Dversion=1.0 -Dpackaging=com.ibm.zurich
+mvn install:install-file -Dfile=lib/idemix_terminal.dev.jar -DgroupId=org.irmacard.idemix -DartifactId=idemix-terminal -Dversion=1.0 -Dpackaging=org.irmacard.idemix
+mvn install:install-file -Dfile=lib/scuba.dev.jar -DgroupId=net.sourceforge.scuba -DartifactId=scuba -Dversion=1.0 -Dpackaging=net.sourceforge.scuba
 ```
 Finally, compile and generate a jar file:
 ```
